@@ -5,15 +5,12 @@ public class Coordinate {
 
     public Coordinate(char x, char y) {
 
-        //Converts the X coordinate
+        //Parses the x and y coordinates into pure integers
         this.x = ConvertMove(x);
+        this.y = Integer.parseInt(""+y) - 1;
 
-        //Parses the Y Coordinate
-        this.y = Integer.parseInt(""+y);
-
-
-        if(this.x > 3 || this.y > 3){
-            throw new SyntaxException("");
+        if((this.x > 3 || this.y > 3) || (this.x < 0 || this.y < 0)){
+            throw new SyntaxException(null);
         }
     }
 
@@ -22,22 +19,18 @@ public class Coordinate {
         switch (moveAlpha) {
             case 'A':
             case 'a':
-            case '0':
                 return 0;
             case 'B':
             case 'b':
-            case '1':
                 return 1;
             case 'C':
             case 'c':
-            case '2':
                 return 2;
             case 'D':
             case 'd':
-            case '3':
                 return 3;
             default:
-                throw new SyntaxException("");
+                throw new SyntaxException(null);
         }
     }
 
