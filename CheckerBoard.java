@@ -48,6 +48,10 @@ public class CheckerBoard {
         while (!validInput);
     }
 
+    //===============================================================================================================
+    //Create a PVP or PVE match
+    //===============================================================================================================
+
     //Start a Player Versus Player game
     public void PlayerVersusPlayer() {
         PrintBoard();
@@ -63,18 +67,24 @@ public class CheckerBoard {
 
     }
 
+    //Start a Player Versus AI game
+    public void PlayerVersusComputer() {
+        //Add another case input if the player wants White or Black
+    }
+
     //Handles if the input is a valid move
     public boolean ValidMove(String move) {
         boolean validMove = true;
-        boolean specialMoveIsValid = false;
+        boolean canPassOrSwap = true;
 
         try {
             TestCaseOne(move);
             TestCaseTwo();
-            TestCaseThree(whiteTurn ? 'W' : 'B');
-            TestCaseFour();
+            canPassOrSwap = TestCaseThree(whiteTurn ? 'W' : 'B');
+            TestCaseFour(canPassOrSwap);
 
         } catch (Exception e) {
+            out.println(e.getMessage());
             return false;
         }
 
@@ -87,63 +97,23 @@ public class CheckerBoard {
 
     }
 
-    //Start a Player Versus AI game
-    public void PlayerVersusComputer() {
-        //Add another case input if the player wants White or Black
-    }
-
-    //=======================================================================================================================
-    //Board Utilities
-    //=======================================================================================================================
-
-    //Resets the board positions at the start
-    public void InitializeBoard() {
-        int emptyspot = 3;
-        whiteTurn = true;
-
-        for (int y = 0; y < 4; y++) {
-            for (int x = 0; x < 4; x++) {
-                if (x == emptyspot) {
-                    board[x][y] = 'o';
-                } else if (x < emptyspot) {
-                    board[x][y] = 'W';
-                } else {
-                    board[x][y] = 'B';
-                }
-            }
-            //This var should keep the diagonal empty
-            emptyspot--;
-        }
-    }
-
-    //Allows quick printing of the board
-    public void PrintBoard() {
-
-        out.println("  A  B  C  D");
-        for (int y = 0; y < 4; y++) {
-            out.print(y + 1);
-            for (int x = 0; x < 4; x++) {
-                out.print(" " + board[x][y] + " ");
-            }
-            out.println();
-        }
-    }
-
-    //=======================================================================================================================
+    //===============================================================================================================
     //Valid Move Test Case Scenario Section
-    //=======================================================================================================================
+    //===============================================================================================================
 
-    //1. Check if the input is correct
-
+    //Check if the input is correct
+    //1. Assigns to the global coordinate variables (May throw exceptions)
     //2. Does the piece exist in the source coordinate
     //3. Does not stop the move but only checks if the player can swap or pass
     //4. Is the destination a valid move for that piece?
 
+    //1. Assigns to the global coordinate variables (May throw exceptions)
     public void TestCaseOne(String move) {
         source = new Coordinate(move.charAt(0), move.charAt(1));
         destination = new Coordinate(move.charAt(3), move.charAt(4));
     }
 
+    //2. Does the piece exist in the source coordinate
     public void TestCaseTwo() {
         if (board[source.getX()][source.getY()] != (whiteTurn ? 'W' : 'B')) {
             //out.println("Cannot move that piece (It is a non player piece or an empty space)");
@@ -151,11 +121,30 @@ public class CheckerBoard {
         }
     }
 
-    public void TestCaseThree(char w) {
+    //3. Does not stop the move but only checks if the player can swap or pass
+    public boolean TestCaseThree(char p) {
+        boolean canPassAndSwap = true;
+
+        for (int y = 0; y < 4; y++) {
+            for (int x = 0; x < 4; x++) {
+                if(board[x][y] == p){
+                    //Check If they can move right or down
+                    //If they can move normally then THEY CANNOT pass nor swap
+                        for(int a = x; a<4; a++ ){
+                            if(board[a][y] == 'o') return (canPassAndSwap = false);
+                        }
+                        for(int b = y; b<4; b-- ){
+                            if(board[x][b] == 'o') return (canPassAndSwap = false);
+                        }
+
+                }
+            }
+        }
 
     }
 
-    public void TestCaseFour() {
+    //4. Is the destination a valid move for that piece?
+    public void TestCaseFour(boolean canSwapOrPass) {
         /*
         North, South, East, West movements
         Outer if checks if the player is trying to move horizontally
@@ -173,11 +162,48 @@ public class CheckerBoard {
             }
         } else if (source.getX() == destination.getX() && source.getY() == destination.getY()) {
             out.println("Can be considered as a pass");
+
         } else {
-            out.println("Cannot move vertically");
             throw new SyntaxException("Cannot move vertically");
         }
     }
+
+    //===============================================================================================================
+    //Board Utilities
+    //===============================================================================================================
+
+    //Resets the board positions at the start
+    public void InitializeBoard() {
+        int emptyspot = 3;
+        whiteTurn = true;
+
+        for (int y = 0; y < 4; y++) {
+            for (int x = 0; x < 4; x++) {
+                if (x == emptyspot) {
+                    board[x][y] = 'o';
+                } else if (x < emptyspot) {
+                    board[x][y] = 'W';
+                } else {
+                    board[x][y] = 'B';
+                }
+            }
+            emptyspot--; //This var should keep the diagonal empty
+        }
+    }
+
+    //Allows quick printing of the board
+    public void PrintBoard() {
+
+        out.println("  A  B  C  D");
+        for (int y = 0; y < 4; y++) {
+            out.print(y + 1);
+            for (int x = 0; x < 4; x++) {
+                out.print(" " + board[x][y] + " ");
+            }
+            out.println();
+        }
+    }
+
 
 }
 

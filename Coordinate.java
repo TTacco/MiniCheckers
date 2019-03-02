@@ -10,7 +10,7 @@ public class Coordinate {
         this.y = Integer.parseInt(""+y) - 1;
 
         if((this.x > 3 || this.y > 3) || (this.x < 0 || this.y < 0)){
-            throw new SyntaxException(null);
+            throw new SyntaxException("Coordinate Array Out of Bounds, Please try again.");
         }
     }
 
@@ -30,7 +30,7 @@ public class Coordinate {
             case 'd':
                 return 3;
             default:
-                throw new SyntaxException(null);
+                throw new SyntaxException("Coordinate alphabet not recognized, Please try again");
         }
     }
 
