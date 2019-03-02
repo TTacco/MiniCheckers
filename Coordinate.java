@@ -6,8 +6,8 @@ public class Coordinate {
     public Coordinate(char x, char y) {
 
         //Parses the x and y coordinates into pure integers
-        this.x = ConvertMove(x);
-        this.y = Integer.parseInt(""+y) - 1;
+        this.y = ConvertMove(x);
+        this.x = Integer.parseInt(""+y) - 1;
 
         if((this.x > 3 || this.y > 3) || (this.x < 0 || this.y < 0)){
             throw new SyntaxException("Coordinate Array Out of Bounds, Please try again.");

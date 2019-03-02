@@ -14,8 +14,7 @@ public class CheckerBoard {
     Coordinate source;
     Coordinate destination;
 
-    //Pattern m = new Pattern();
-    Matcher m;
+    int totalMoves;
 
 
     public void InitializeGame() {
@@ -54,16 +53,24 @@ public class CheckerBoard {
 
     //Start a Player Versus Player game
     public void PlayerVersusPlayer() {
-        PrintBoard();
-        out.println("It is " + (whiteTurn ? "White's" : "Black's") + " turn\n ");
         String move = "";
 
         //Checks for move validation
         out.println("Enter coordinates from source to destination ex: A2,C4 ");
+
+
         do {
-            move = scan.nextLine();
-        }
-        while (!ValidMove(move));
+            PrintBoard();
+            out.println("It is " + (whiteTurn ? "White's" : "Black's") + " turn\n ");
+
+            do {
+                move = scan.nextLine();
+            }
+            while (!ValidMove(move));
+
+            MovePiece();
+            move = "";
+        } while (!WinCondition());
 
     }
 
@@ -74,7 +81,6 @@ public class CheckerBoard {
 
     //Handles if the input is a valid move
     public boolean ValidMove(String move) {
-        boolean validMove = true;
         boolean canPassOrSwap = true;
 
         try {
@@ -84,17 +90,54 @@ public class CheckerBoard {
             TestCaseFour(canPassOrSwap);
 
         } catch (Exception e) {
-            out.println(e.getMessage());
+            //out.println(e.printStackTrace());
+            e.printStackTrace();
             return false;
         }
 
-        out.println("Valid Coordinate");
+        out.println("Valid Move");
         return true;
 
     }
 
-    public void MovePiece(String move) {
+    public void MovePiece() {
+        char sourceChar = board[source.getX()][source.getY()];
+        char bufferChar = sourceChar;
 
+        //Source Coordinate Char = Destination Coordinate Char
+        board[source.getX()][source.getY()] = board[destination.getX()][destination.getY()];
+
+        //Destination Coordinate Char = BufferChar
+        board[destination.getX()][destination.getY()] = bufferChar;
+    }
+
+    public boolean WinCondition() {
+        int limit = 3;
+        int whiteScore = 0;
+        int blackScore = 0;
+
+        for (int x = 0; x < 4; x++) {
+            for(int y = 0; y < 4; y++) {
+                if(y < limit){
+                    if(board[x][y]=='B') blackScore++;
+                }
+                else if(y > limit){
+                    if(board[x][y]=='W') whiteScore++;
+                }
+            }
+            limit--;
+        }
+
+        if(whiteScore >= 6){
+            out.println("White side has won!");
+        }
+        else if(blackScore >= 6){
+            out.println("Black side has won!");
+        }
+
+
+        whiteTurn = !whiteTurn;
+        return false;
     }
 
     //===============================================================================================================
@@ -113,49 +156,43 @@ public class CheckerBoard {
         destination = new Coordinate(move.charAt(3), move.charAt(4));
     }
 
-    //2. Does the piece exist in the source coordinate
+    //2. Does the piece exist in the source coordinate or is there already piece at the destination?
     public void TestCaseTwo() {
         if (board[source.getX()][source.getY()] != (whiteTurn ? 'W' : 'B')) {
-            //out.println("Cannot move that piece (It is a non player piece or an empty space)");
             throw new SyntaxException("Cannot move that piece (It is a non player piece or an empty space");
         }
     }
 
     //3. Does not stop the move but only checks if the player can swap or pass
     public boolean TestCaseThree(char p) {
-        boolean canPassAndSwap = true;
-
         for (int x = 0; x < 4; x++) {
             for (int y = 0; y < 4; y++) {
-                if(board[x][y] == p){
+                if (board[x][y] == p) {
                     //Check if the player has valid moves for any of their pieces
                     //If they can move normally then THEY CANNOT pass nor swap
                     //Checks each pieces and checks any moves horizontally or vertically, respectively
-                        for(int a = x; a<4; a = XValue(a) ){
-                            if(board[x][a] == 'o') return (canPassAndSwap = false);
-                        }
-                        for(int b = y; b<4; b = YValue(b) ){
-                            if(board[b][y] == 'o') return (canPassAndSwap = false);
-                        }
+                    for (int a = y; a < 4 && a > 0; a = ArrayMove(a)) {
+                        if (board[x][a] == 'o') return (false);
+                    }
+                    for (int b = x; b < 4 && b > 0; b = ArrayMove(b)) {
+                        if (board[b][y] == 'o') return (false);
+                    }
 
                 }
             }
         }
 
-        return canPassAndSwap;
+        return true;
 
     }
 
-    //Checks Forwards Moves for each Pieces
+    //Checks Forwards Moves for each Pieces DEPENDING ON THE CURRENT PLAYER
     //I love local methods
     //And probably ternaries too, mostly ternaries
-    int XValue(int x){
-        return (whiteTurn? x+1 : x-1);
+    int ArrayMove(int z) {
+        return (whiteTurn ? z + 1 : z - 1);
     }
 
-    int YValue(int y){
-        return (whiteTurn? y+1 : y-1);
-    }
 
     //4. Is the destination a valid move for that piece?
     public void TestCaseFour(boolean canSwapOrPass) {
@@ -169,13 +206,23 @@ public class CheckerBoard {
             //Hop Movement
             if (Math.abs(source.getX() - destination.getX()) > 1 || Math.abs(source.getY() - destination.getY()) > 1) {
                 out.println("Moved more than one step");
+
+
+
             }
             //Single Movement
             else if (Math.abs(source.getX() - destination.getX()) == 1 || Math.abs(source.getY() - destination.getY()) == 1) {
                 out.println("Moved only one step");
+                if ((board[destination.getX()][destination.getY()] == 'W'
+                        || board[destination.getX()][destination.getY()] == 'B')
+                        && !canSwapOrPass) {
+
+                    throw new SyntaxException("There is a piece that already exists in that area and the player is not allowed to swap yet");
+                }
+
             }
         } else if (source.getX() == destination.getX() && source.getY() == destination.getY()) {
-            out.println("Can be considered as a pass");
+            out.println("Player has Passed");
 
         } else {
             throw new SyntaxException("Cannot move vertically");
