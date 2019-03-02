@@ -130,10 +130,10 @@ public class CheckerBoard {
                 if(board[x][y] == p){
                     //Check If they can move right or down
                     //If they can move normally then THEY CANNOT pass nor swap
-                        for(int a = x; a<4; a++ ){
+                        for(int a = x; a<4; x = XValue(x) ){
                             if(board[a][y] == 'o') return (canPassAndSwap = false);
                         }
-                        for(int b = y; b<4; b-- ){
+                        for(int b = y; b<4; y = YValue(y) ){
                             if(board[x][b] == 'o') return (canPassAndSwap = false);
                         }
 
@@ -141,6 +141,17 @@ public class CheckerBoard {
             }
         }
 
+        return canPassAndSwap;
+
+    }
+
+    //Checks Forwards Moves for each Pieces
+    int XValue(int x){
+        return (whiteTurn? x+1 : x-1);
+    }
+
+    int YValue(int y){
+        return (whiteTurn? y-1 : y+1);
     }
 
     //4. Is the destination a valid move for that piece?
