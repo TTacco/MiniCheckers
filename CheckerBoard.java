@@ -125,16 +125,17 @@ public class CheckerBoard {
     public boolean TestCaseThree(char p) {
         boolean canPassAndSwap = true;
 
-        for (int y = 0; y < 4; y++) {
-            for (int x = 0; x < 4; x++) {
+        for (int x = 0; x < 4; x++) {
+            for (int y = 0; y < 4; y++) {
                 if(board[x][y] == p){
-                    //Check If they can move right or down
+                    //Check if the player has valid moves for any of their pieces
                     //If they can move normally then THEY CANNOT pass nor swap
-                        for(int a = x; a<4; x = XValue(x) ){
-                            if(board[a][y] == 'o') return (canPassAndSwap = false);
+                    //Checks each pieces and checks any moves horizontally or vertically, respectively
+                        for(int a = x; a<4; a = XValue(a) ){
+                            if(board[x][a] == 'o') return (canPassAndSwap = false);
                         }
-                        for(int b = y; b<4; y = YValue(y) ){
-                            if(board[x][b] == 'o') return (canPassAndSwap = false);
+                        for(int b = y; b<4; b = YValue(b) ){
+                            if(board[b][y] == 'o') return (canPassAndSwap = false);
                         }
 
                 }
@@ -146,12 +147,14 @@ public class CheckerBoard {
     }
 
     //Checks Forwards Moves for each Pieces
+    //I love local methods
+    //And probably ternaries too, mostly ternaries
     int XValue(int x){
         return (whiteTurn? x+1 : x-1);
     }
 
     int YValue(int y){
-        return (whiteTurn? y-1 : y+1);
+        return (whiteTurn? y+1 : y-1);
     }
 
     //4. Is the destination a valid move for that piece?
@@ -188,11 +191,11 @@ public class CheckerBoard {
         int emptyspot = 3;
         whiteTurn = true;
 
-        for (int y = 0; y < 4; y++) {
-            for (int x = 0; x < 4; x++) {
-                if (x == emptyspot) {
+        for (int x = 0; x < 4; x++) {
+            for (int y = 0; y < 4; y++) {
+                if (y == emptyspot) {
                     board[x][y] = 'o';
-                } else if (x < emptyspot) {
+                } else if (y < emptyspot) {
                     board[x][y] = 'W';
                 } else {
                     board[x][y] = 'B';
@@ -206,13 +209,14 @@ public class CheckerBoard {
     public void PrintBoard() {
 
         out.println("  A  B  C  D");
-        for (int y = 0; y < 4; y++) {
-            out.print(y + 1);
-            for (int x = 0; x < 4; x++) {
+        for (int x = 0; x < 4; x++) {
+            out.print(x + 1);
+            for (int y = 0; y < 4; y++) {
                 out.print(" " + board[x][y] + " ");
             }
             out.println();
         }
+
     }
 
 
