@@ -72,6 +72,14 @@ public class CheckerMain {
                 }
                 else if(b.ai_player == b.player){
                     ArrayList<AIMove> allMoves = b.GenerateMoves(b.ai_player);
+
+                    System.out.println(allMoves.size());
+
+                    //for(AIMove a : allMoves){
+                    //    System.out.println(a.destinationI+ " " +a.destinationJ);
+                    //}
+
+                    scan.nextLine();
                     //PERFORM AI MOVE HERE
                 }
 

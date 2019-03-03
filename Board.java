@@ -45,13 +45,13 @@ public class Board {
                             int l = j+radius*directionJ[loop];
                             if((k>=0 && k<=3 ) && (l>=0 && l<=3 )){
 
-                                if(MovePiece(i,j,k,l)){
+                                if(MovePieceSpecific(player, i,j,k,l)){
                                 allPossibleMoves.add(new AIMove(i,j,k,l));
                                 }
                             }
                         }
                         catch (Exception e){
-                            out.println(e.getStackTrace());
+                            out.println(e);
                         }
 
                     }
@@ -81,8 +81,11 @@ public class Board {
         }
     }
 
+    //Same as above but this is for the specific char implementation
     public boolean MovePieceSpecific(char player, int srcI, int srcJ, int dstI, int dstJ) {
         boolean validMove = true;
+
+        out.println("SPECIFIC MOVE PIECE REACHED");
 
         validMove = ValidMoveCheckSpecific(player, srcI, srcJ, dstI, dstJ);
 
@@ -114,11 +117,15 @@ public class Board {
 
     //For tree generation of specific player
     public boolean ValidMoveCheckSpecific(char player, int srcI, int srcJ, int dstI, int dstJ) {
+
+        out.println("VALID MOVE CHECK REACHED");
         try {
-            TestCaseTwo(srcI, srcJ);
+            TestCaseTwo(player, srcI, srcJ);
             TestCaseFour(TestCaseThree(player), srcI, srcJ, dstI, dstJ);
         } catch (Exception e) {
             System.out.println(e.getMessage());
+
+            out.println("THROWING EXCEPTION HERE");
             return false;
         }
         return true;
@@ -130,6 +137,12 @@ public class Board {
 
     //2. Does the piece exist in the source coordinate or is there already piece at the destination?
     public void TestCaseTwo(int i, int j) {
+        if (board[i][j] != player) {
+            throw new SyntaxException("Cannot move that piece (It is a non player piece or an empty space");
+        }
+    }
+
+    public void TestCaseTwo(char player, int i, int j) {
         if (board[i][j] != player) {
             throw new SyntaxException("Cannot move that piece (It is a non player piece or an empty space");
         }
@@ -160,10 +173,10 @@ public class Board {
         for (int x = 0; x < 4; x++) {
             for (int y = 0; y < 4; y++) {
                 if (board[x][y] == piece) {
-                    for (int a = y; a < 4 && a > 0; a = ArrayMove(a)) {
+                    for (int a = y; a < 4 && a >= 0; a = ArrayMove(a)) {
                         if (board[x][a] == 'o') return (false);
                     }
-                    for (int b = x; b < 4 && b > 0; b = ArrayMove(b)) {
+                    for (int b = x; b < 4 && b >= 0; b = ArrayMove(b)) {
                         if (board[b][y] == 'o') return (false);
                     }
                 }
