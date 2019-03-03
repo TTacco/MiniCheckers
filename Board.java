@@ -3,21 +3,21 @@ import jdk.nashorn.internal.runtime.regexp.joni.exception.SyntaxException;
 import static java.lang.System.out;
 
 public class Board {
+    char player;
+
     char board[][] =
             {
-                    {'W', 'W', 'W', 'o'},
-                    {'W', 'W', 'o', 'B'},
-                    {'W', 'o', 'B', 'B'},
-                    {'o', 'B', 'B', 'B'},
+                    {'o', 'o', 'o', 'o'},
+                    {'o', 'o', 'o', 'o'},
+                    {'o', 'o', 'o', 'o'},
+                    {'o', 'o', 'o', 'o'},
             };
 
 
     public int MovePiece(char player, int srcI, int srcJ, int dstI, int dstJ) {
         boolean validMove = true;
 
-
-        validMove = ValidMoveCheck(player, srcI, srcJ, dstI, dstJ);
-
+        validMove = ValidMoveCheck(srcI, srcJ, dstI, dstJ);
 
         if (validMove) {
             //Swap Characters Here
@@ -29,10 +29,10 @@ public class Board {
     }
 
     //Source I, Source J, Destination I, Destination J
-    public boolean ValidMoveCheck(char player, int srcI, int srcJ, int dstI, int dstJ) {
+    public boolean ValidMoveCheck(int srcI, int srcJ, int dstI, int dstJ) {
         try {
-            TestCaseTwo(player, srcI, srcJ);
-            TestCaseFour(TestCaseThree(player), srcI, srcJ, dstI, dstJ);
+            TestCaseTwo(srcI, srcJ);
+            TestCaseFour(TestCaseThree(), srcI, srcJ, dstI, dstJ);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return false;
@@ -43,24 +43,24 @@ public class Board {
     }
 
     //2. Does the piece exist in the source coordinate or is there already piece at the destination?
-    public void TestCaseTwo(char player, int i, int j) {
+    public void TestCaseTwo(int i, int j) {
         if (board[i][j] != player) {
             throw new SyntaxException("Cannot move that piece (It is a non player piece or an empty space");
         }
     }
 
     //3. Does not stop the move but only checks if the player can swap or pass
-    public boolean TestCaseThree(char p) {
+    public boolean TestCaseThree() {
         for (int x = 0; x < 4; x++) {
             for (int y = 0; y < 4; y++) {
-                if (board[x][y] == p) {
+                if (board[x][y] == player) {
                     //Check if the player has valid moves for any of their pieces
                     //If they can move normally then THEY CANNOT pass nor swap
                     //Checks each pieces and checks any moves horizontally or vertically, respectively
-                    for (int a = y; a < 4 && a > 0; a = ArrayMove(a, p)) {
+                    for (int a = y; a < 4 && a > 0; a = ArrayMove(a)) {
                         if (board[x][a] == 'o') return (false);
                     }
-                    for (int b = x; b < 4 && b > 0; b = ArrayMove(b, p)) {
+                    for (int b = x; b < 4 && b > 0; b = ArrayMove(b)) {
                         if (board[b][y] == 'o') return (false);
                     }
 
@@ -70,11 +70,11 @@ public class Board {
         return true;
     }
 
-    int ArrayMove(int z, char p) {
+    int ArrayMove(int z) {
 
-        if (p == 'W') {
+        if (player == 'w') {
             return z + 1;
-        } else if (p == 'B') {
+        } else if (player == 'b') {
             return z - 1;
         }
 
@@ -121,7 +121,7 @@ public class Board {
                     throw new SyntaxException("Cannot hop to an existing piece");
                 }
 
-                for (int a = srcI; a != srcI; a = Increment(a, srcI, srcJ, dstI, dstJ)) {
+                for (int a = srcI; a != dstI; a = Increment(a, srcI, srcJ, dstI, dstJ)) {
                     if (board[a][srcJ] == 'o') {
                         throw new SyntaxException("Cannot hop vertically");
                     }
@@ -131,8 +131,8 @@ public class Board {
             //Single Movement
             else if (Math.abs(srcI - dstI) == 1 || Math.abs(srcJ - dstJ) == 1) {
                 out.println("Moved only one step");
-                if ((board[dstI][dstJ] == 'W'
-                        || board[dstI][dstJ] == 'B')
+                if ((board[dstI][dstJ] == 'w'
+                        || board[dstI][dstJ] == 'b')
                         && !canSwapOrPass) {
                     throw new SyntaxException("There is a piece that already exists in that area and the player is not allowed to swap yet");
                 }
@@ -152,4 +152,38 @@ public class Board {
             return --z;
         }
     }
+    //==================================================================================
+    //Board Utilities
+    //==================================================================================
+
+    public void InitalizeBoard(){
+        int emptyspot = 3;
+        player = 'w';
+
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (j == emptyspot) {
+                    board[i][j] = 'o';
+                } else if (j < emptyspot) {
+                    board[i][j] = 'w';
+                } else {
+                    board[i][j] = 'b';
+                }
+            }
+            emptyspot--; //This var should keep the diagonal empty
+        }
+    }
+
+    public void DrawBoard(){
+        out.println("  A  B  C  D");
+        for (int i = 0; i < 4; i++) {
+            out.print(i + 1);
+            for (int j = 0; j < 4; j++) {
+                out.print(" " + board[i][j] + " ");
+            }
+            out.println();
+        }
+    }
+
+
 }

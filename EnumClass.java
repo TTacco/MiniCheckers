@@ -1,12 +1,8 @@
 public class EnumClass {
-
-    public enum Player{
-        WHITE_PLAYER,
-        BLACK_PLAYER
-    }
-
     public enum ErrorType{
-        NON_EXISTANT_PIECE
+        PIECE_NOT_OWNED,
+        DIAGONAL_MOVEMENT,
+
     }
 
 }
