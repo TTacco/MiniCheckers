@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class CheckerMain {
@@ -68,6 +69,10 @@ public class CheckerMain {
                             syntaxValid = false;
                         }
                     } while (!syntaxValid);
+                }
+                else if(b.ai_player == b.player){
+                    ArrayList<AIMove> allMoves = b.GenerateMoves(b.ai_player);
+                    //PERFORM AI MOVE HERE
                 }
 
                 //Checks if the move is valid, returns a bool for now

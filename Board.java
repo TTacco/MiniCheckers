@@ -1,5 +1,7 @@
 import jdk.nashorn.internal.runtime.regexp.joni.exception.SyntaxException;
 
+import java.util.ArrayList;
+
 import static java.lang.System.out;
 
 public class Board {
@@ -21,6 +23,48 @@ public class Board {
 
 
     //==================================================================================
+    //Board AI
+    //==================================================================================
+
+    //Up Right Down Left
+    int directionI[] = {-1, 0, 1, 0};
+    int directionJ[] = {0, 1, 0, -1};
+
+    public ArrayList<AIMove> GenerateMoves(char player){
+        ArrayList<AIMove> allPossibleMoves = null;
+
+        boolean canSwapOrPass = TestCaseThree(player);
+
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                if(board[i][j] == player){
+                    for (int radius = 1, loop = 0; loop < 4; radius++,loop++) {
+                        try{
+                            //Test Destination Coordinates (k,l)
+                            int k = i+radius*directionI[loop];
+                            int l = j+radius*directionJ[loop];
+                            if((k>=0 && k<=3 ) && (l>=0 && l<=3 )){
+
+                                if(MovePiece(i,j,k,l)){
+                                allPossibleMoves.add(new AIMove(i,j,k,l));
+                                }
+                            }
+                        }
+                        catch (Exception e){
+                            out.println(e.getStackTrace());
+                        }
+
+                    }
+                }
+            }
+        }
+
+        return allPossibleMoves;
+    }
+
+
+
+    //==================================================================================
     //Board Piece Movement
     //==================================================================================
 
@@ -28,6 +72,19 @@ public class Board {
         boolean validMove = true;
 
         validMove = ValidMoveCheck(srcI, srcJ, dstI, dstJ);
+
+        if (validMove) {
+            SwapPieces(srcI, srcJ, dstI, dstJ);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean MovePieceSpecific(char player, int srcI, int srcJ, int dstI, int dstJ) {
+        boolean validMove = true;
+
+        validMove = ValidMoveCheckSpecific(player, srcI, srcJ, dstI, dstJ);
 
         if (validMove) {
             SwapPieces(srcI, srcJ, dstI, dstJ);
@@ -55,6 +112,18 @@ public class Board {
         return true;
     }
 
+    //For tree generation of specific player
+    public boolean ValidMoveCheckSpecific(char player, int srcI, int srcJ, int dstI, int dstJ) {
+        try {
+            TestCaseTwo(srcI, srcJ);
+            TestCaseFour(TestCaseThree(player), srcI, srcJ, dstI, dstJ);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
     //==================================================================================
     //Logical or Valid Move Checkers, returns false if the move is not valid
     //==================================================================================
@@ -66,7 +135,7 @@ public class Board {
         }
     }
 
-    //3. Does not stop the move but only checks if the player can swap or pass
+    //3a. Does not stop the move but only checks if the player can swap or pass
     public boolean TestCaseThree() {
         for (int x = 0; x < 4; x++) {
             for (int y = 0; y < 4; y++) {
@@ -86,6 +155,23 @@ public class Board {
         }
         return true;
     }
+    //3b. Overload where the current passed character is instead checked
+    public boolean TestCaseThree(char piece) {
+        for (int x = 0; x < 4; x++) {
+            for (int y = 0; y < 4; y++) {
+                if (board[x][y] == piece) {
+                    for (int a = y; a < 4 && a > 0; a = ArrayMove(a)) {
+                        if (board[x][a] == 'o') return (false);
+                    }
+                    for (int b = x; b < 4 && b > 0; b = ArrayMove(b)) {
+                        if (board[b][y] == 'o') return (false);
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
 
     int ArrayMove(int z) {
 
@@ -109,7 +195,7 @@ public class Board {
             if (canSwapOrPass) {
                 out.println("Player has Passed");
             } else {
-                throw new SyntaxException("You pass turns yet as you still have forward moves");
+                throw new SyntaxException("You cant pass turns yet as you still have forward moves");
             }
         } else if (srcI == dstI || srcJ == dstJ) {
             //out.println("Movement detected");
