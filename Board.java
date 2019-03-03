@@ -3,7 +3,10 @@ import jdk.nashorn.internal.runtime.regexp.joni.exception.SyntaxException;
 import static java.lang.System.out;
 
 public class Board {
+
+
     char player;
+    int totalMoves;
 
     char board[][] =
             {
@@ -14,7 +17,7 @@ public class Board {
             };
 
 
-    public int MovePiece(char player, int srcI, int srcJ, int dstI, int dstJ) {
+    public boolean MovePiece(int srcI, int srcJ, int dstI, int dstJ) {
         boolean validMove = true;
 
         validMove = ValidMoveCheck(srcI, srcJ, dstI, dstJ);
@@ -22,9 +25,9 @@ public class Board {
         if (validMove) {
             //Swap Characters Here
 
-            return 1;
+            return true;
         } else {
-            return -1;
+            return false;
         }
     }
 
@@ -182,6 +185,16 @@ public class Board {
                 out.print(" " + board[i][j] + " ");
             }
             out.println();
+        }
+    }
+
+    public void SwapPlayer(){
+        if(player=='w'){
+            player = 'b';
+        }
+        else{
+            player = 'w';
+
         }
     }
 
