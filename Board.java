@@ -4,8 +4,11 @@ import static java.lang.System.out;
 
 public class Board {
 
+    boolean aiMatch = false;
 
     char player;
+    char ai_player;
+
     int totalMoves;
 
     char board[][] =
@@ -17,18 +20,27 @@ public class Board {
             };
 
 
+    //==================================================================================
+    //Board Piece Movement
+    //==================================================================================
+
     public boolean MovePiece(int srcI, int srcJ, int dstI, int dstJ) {
         boolean validMove = true;
 
         validMove = ValidMoveCheck(srcI, srcJ, dstI, dstJ);
 
         if (validMove) {
-            //Swap Characters Here
-
+            SwapPieces(srcI, srcJ, dstI, dstJ);
             return true;
         } else {
             return false;
         }
+    }
+
+    private void SwapPieces(int srcI, int srcJ, int dstI, int dstJ) {
+        char bufferChar = board[srcI][srcJ];
+        board[srcI][srcJ] = board[dstI][dstJ];
+        board[dstI][dstJ] = bufferChar;
     }
 
     //Source I, Source J, Destination I, Destination J
@@ -40,10 +52,12 @@ public class Board {
             System.out.println(e.getMessage());
             return false;
         }
-
-
         return true;
     }
+
+    //==================================================================================
+    //Logical or Valid Move Checkers, returns false if the move is not valid
+    //==================================================================================
 
     //2. Does the piece exist in the source coordinate or is there already piece at the destination?
     public void TestCaseTwo(int i, int j) {
@@ -159,7 +173,7 @@ public class Board {
     //Board Utilities
     //==================================================================================
 
-    public void InitalizeBoard(){
+    public void InitalizeBoard() {
         int emptyspot = 3;
         player = 'w';
 
@@ -177,7 +191,7 @@ public class Board {
         }
     }
 
-    public void DrawBoard(){
+    public void DrawBoard() {
         out.println("  A  B  C  D");
         for (int i = 0; i < 4; i++) {
             out.print(i + 1);
@@ -188,14 +202,45 @@ public class Board {
         }
     }
 
-    public void SwapPlayer(){
-        if(player=='w'){
+    public void SwapPlayer() {
+        if (player == 'w') {
             player = 'b';
-        }
-        else{
+        } else {
             player = 'w';
 
         }
+    }
+
+    public boolean CheckVictory() {
+        int limit = 3;
+        int whiteScore = 0;
+        int blackScore = 0;
+
+        for (int x = 0; x < 4; x++) {
+            for (int y = 0; y < 4; y++) {
+                if (y < limit) {
+                    if (board[x][y] == 'B') blackScore++;
+                } else if (y > limit) {
+                    if (board[x][y] == 'W') whiteScore++;
+                }
+            }
+            limit--;
+        }
+
+        if (whiteScore >= 6) {
+            out.println("White side has won!");
+            return true;
+        } else if (blackScore >= 6) {
+            out.println("Black side has won!");
+            return true;
+        }
+
+        return false;
+    }
+
+    public void StartAIMatch(char team) {
+        aiMatch = true;
+        ai_player = team;
     }
 
 
