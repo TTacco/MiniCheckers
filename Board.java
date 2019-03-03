@@ -39,10 +39,16 @@ public class Board {
                     for(int radius = 1; radius < 4; radius++){
                         for (int loop = 0; loop < 4; loop++) {
                             //Test Destination Coordinates (k,l)
-                            int k = i + radius * directionI[loop];
-                            int l = j + radius * directionJ[loop];
+                            int k = 0;
+                            int l = 0;
+
+                            k = i + radius * directionI[loop];
+                            l = j + radius * directionJ[loop];
                             if ((k >= 0 && k < 4) && (l >= 0 && l < 4)) {
                                 if (MovePieceSpecific(player, i, j, k, l)) {
+                                    //System.out.print("Source " + i + "," + j);
+                                    //System.out.println(" Destination " + k + "," + l);
+
                                     allPossibleMoves.add(new AIMove(i, j, k, l));
                                 }
                             }
@@ -76,9 +82,7 @@ public class Board {
 
     //Same as above but this is for the specific char implementation
     public boolean MovePieceSpecific(char player, int srcI, int srcJ, int dstI, int dstJ) {
-        boolean validMove = true;
-
-        return validMove = ValidMoveCheckSpecific(player, srcI, srcJ, dstI, dstJ);
+        return ValidMoveCheckSpecific(player, srcI, srcJ, dstI, dstJ);
     }
 
     private void SwapPieces(int srcI, int srcJ, int dstI, int dstJ) {
@@ -103,10 +107,9 @@ public class Board {
     public boolean ValidMoveCheckSpecific(char player, int srcI, int srcJ, int dstI, int dstJ) {
 
         try {
-            TestCaseTwo(player, srcI, srcJ);
-            TestCaseFour(TestCaseThree(player), srcI, srcJ, dstI, dstJ);
+            TestCaseTwoSpecific(player, srcI, srcJ);
+            TestCaseFourSpecific(TestCaseThree(player), srcI, srcJ, dstI, dstJ);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return false;
         }
         return true;
@@ -123,7 +126,7 @@ public class Board {
         }
     }
 
-    public void TestCaseTwo(char player, int i, int j) {
+    public void TestCaseTwoSpecific(char player, int i, int j) {
         if (board[i][j] != player) {
             throw new SyntaxException("");
         }
@@ -211,7 +214,7 @@ public class Board {
 
             }
             //Hop Movement Vertical
-            else if (Math.abs(srcI - dstJ) > 1) {
+            else if (Math.abs(srcI - dstI) > 1) {
                 //out.println("HOP CHECK V");
 
                 if (!(board[dstI][dstJ] == 'o')) {
@@ -237,7 +240,66 @@ public class Board {
         } else {
             throw new SyntaxException("Cannot move vertically");
         }
+    }
 
+    //Same but its for the AI
+    public void TestCaseFourSpecific(boolean canSwapOrPass, int srcI, int srcJ, int dstI, int dstJ) {
+        /*
+        North, South, East, West movements
+        Outer if checks if the player is trying to move horizontally
+        Inner If the distance is greater than 1 movement we know that the player is trying to hop, else simple movement
+        */
+
+        if (srcI == dstI && srcJ == dstJ) {
+            if (canSwapOrPass) {
+            } else {
+                throw new SyntaxException(null);
+            }
+        } else if (srcI == dstI || srcJ == dstJ) {
+            //out.println("Movement detected");
+            //Hop Movement Horizontal
+
+
+            if (Math.abs(srcJ - dstJ) > 1) {
+                //out.println("HOP CHECK H");
+                if (!(board[dstI][dstJ] == 'o')) {
+                    throw new SyntaxException(null);
+                }
+
+                for (int b = srcJ; b != dstJ; b = Increment(b, srcI, srcJ, dstI, dstJ)) {
+                    if (board[srcI][b] == 'o') {
+                        throw new SyntaxException(null);
+                    }
+
+                }
+                //srcI = 2 , srcJ = 2 , dstI = 0 , dstJ = 2
+            }
+            //Hop Movement Vertical
+            else if (Math.abs(srcI - dstI) > 1) {
+                //out.println("HOP CHECK V");
+
+                if (!(board[dstI][dstJ] == 'o')) {
+                    throw new SyntaxException(null);
+                }
+
+                for (int a = srcI; a != dstI; a = Increment(a, srcI, srcJ, dstI, dstJ)) {
+                    if (board[a][srcJ] == 'o') {
+                        throw new SyntaxException(null);
+                    }
+                }
+
+            }
+            //Single Movement
+            else if (Math.abs(srcI - dstI) == 1 || Math.abs(srcJ - dstJ) == 1) {
+                if ((board[dstI][dstJ] == 'w'
+                        || board[dstI][dstJ] == 'b')
+                        && !canSwapOrPass) {
+                    throw new SyntaxException(null);
+                }
+            }
+        } else {
+            throw new SyntaxException("Cannot move vertically");
+        }
     }
 
     //Handles incrementation for TestCaseFour
@@ -299,9 +361,9 @@ public class Board {
         for (int x = 0; x < 4; x++) {
             for (int y = 0; y < 4; y++) {
                 if (y < limit) {
-                    if (board[x][y] == 'B') blackScore++;
+                    if (board[x][y] == 'b') blackScore++;
                 } else if (y > limit) {
-                    if (board[x][y] == 'W') whiteScore++;
+                    if (board[x][y] == 'w') whiteScore++;
                 }
             }
             limit--;

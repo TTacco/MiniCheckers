@@ -71,7 +71,6 @@ public class CheckerMain {
                     } while (!syntaxValid);
                 }
                 else if(b.ai_player == b.player){
-                    System.out.println("HAs it been created");
                     ArrayList<AIMove> allMoves = b.GenerateMoves(b.ai_player);
 
                     //System.out.println("IS EMPTY? " + allMoves.isEmpty());
