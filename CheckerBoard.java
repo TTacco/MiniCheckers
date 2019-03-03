@@ -1,3 +1,4 @@
+import jdk.nashorn.internal.runtime.regexp.joni.Syntax;
 import jdk.nashorn.internal.runtime.regexp.joni.exception.SyntaxException;
 
 import java.util.Scanner;
@@ -60,8 +61,10 @@ public class CheckerBoard {
 
 
         do {
+            out.println("======================");
             PrintBoard();
             out.println("It is " + (whiteTurn ? "White's" : "Black's") + " turn\n ");
+            out.println("======================");
 
             do {
                 move = scan.nextLine();
@@ -79,6 +82,10 @@ public class CheckerBoard {
         //Add another case input if the player wants White or Black
     }
 
+    //===============================================================================================================
+    //Board Conditions and Movement
+    //===============================================================================================================
+
     //Handles if the input is a valid move
     public boolean ValidMove(String move) {
         boolean canPassOrSwap = true;
@@ -91,7 +98,7 @@ public class CheckerBoard {
 
         } catch (Exception e) {
             //out.println(e.printStackTrace());
-            e.printStackTrace();
+            out.println(e.getMessage());
             return false;
         }
 
@@ -101,8 +108,8 @@ public class CheckerBoard {
     }
 
     public void MovePiece() {
-        char sourceChar = board[source.getX()][source.getY()];
-        char bufferChar = sourceChar;
+        //Stores the source character
+        char bufferChar = board[source.getX()][source.getY()];
 
         //Source Coordinate Char = Destination Coordinate Char
         board[source.getX()][source.getY()] = board[destination.getX()][destination.getY()];
@@ -130,9 +137,13 @@ public class CheckerBoard {
 
         if(whiteScore >= 6){
             out.println("White side has won!");
+            PrintBoard();
+            return true;
         }
         else if(blackScore >= 6){
             out.println("Black side has won!");
+            PrintBoard();
+            return true;
         }
 
 
@@ -201,13 +212,49 @@ public class CheckerBoard {
         Outer if checks if the player is trying to move horizontally
         Inner If the distance is greater than 1 movement we know that the player is trying to hop, else simple movement
         */
-        if (source.getX() == destination.getX() || source.getY() == destination.getY()) {
 
-            //Hop Movement
-            if (Math.abs(source.getX() - destination.getX()) > 1 || Math.abs(source.getY() - destination.getY()) > 1) {
-                out.println("Moved more than one step");
+        if (source.getX() == destination.getX() && source.getY() == destination.getY()) {
+            if(canSwapOrPass) {
+                out.println("Player has Passed");
+            }
+            else{
+                throw new SyntaxException("You pass turns yet as you still have forward moves");
+            }
+        }
+        else if (source.getX() == destination.getX() || source.getY() == destination.getY()) {
+            //out.println("Movement detected");
+            //Hop Movement Horizontal
+            //out.println("SOURCE : "+ source.getX() + " " + source.getY() );
+            //out.println("DESTINATION : "+ destination.getX() + " " + destination.getY() );
 
+            if (Math.abs(source.getY() - destination.getY()) > 1) {
+                //out.println("HOP CHECK H");
 
+                if(!(board[destination.getX()][destination.getY()] == 'o')){
+                    throw new SyntaxException("Cannot hop to an existing piece");
+                }
+
+                for(int b = source.getY(); b != destination.getY(); b = Increment(b) ){
+                    if(board[source.getX()][b] == 'o'){
+                        throw new SyntaxException("Cannot hop horizontally");
+                    }
+
+                }
+
+            }
+            //Hop Movement Vertical
+            else if(Math.abs(source.getX() - destination.getX()) > 1){
+                //out.println("HOP CHECK V");
+
+                if(!(board[destination.getX()][destination.getY()] == 'o')){
+                    throw new SyntaxException("Cannot hop to an existing piece");
+                }
+
+                for(int a = source.getX(); a != destination.getX(); a = Increment(a) ){
+                    if(board[a][source.getY()] == 'o'){
+                        throw new SyntaxException("Cannot hop vertically");
+                    }
+                }
 
             }
             //Single Movement
@@ -216,17 +263,28 @@ public class CheckerBoard {
                 if ((board[destination.getX()][destination.getY()] == 'W'
                         || board[destination.getX()][destination.getY()] == 'B')
                         && !canSwapOrPass) {
-
                     throw new SyntaxException("There is a piece that already exists in that area and the player is not allowed to swap yet");
                 }
-
             }
-        } else if (source.getX() == destination.getX() && source.getY() == destination.getY()) {
-            out.println("Player has Passed");
-
-        } else {
+        }  else {
             throw new SyntaxException("Cannot move vertically");
         }
+
+
+
+
+    }
+
+    public int Increment(int z){
+
+        if(source.getX() < destination.getX() || source.getY() < destination.getY() ){
+            z++;
+        }
+        else{
+            z--;
+        }
+
+        return z;
     }
 
     //===============================================================================================================
