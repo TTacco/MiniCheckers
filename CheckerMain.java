@@ -71,13 +71,15 @@ public class CheckerMain {
                     } while (!syntaxValid);
                 }
                 else if(b.ai_player == b.player){
+                    System.out.println("HAs it been created");
                     ArrayList<AIMove> allMoves = b.GenerateMoves(b.ai_player);
 
-                    System.out.println(allMoves.size());
+                    //System.out.println("IS EMPTY? " + allMoves.isEmpty());
 
-                    //for(AIMove a : allMoves){
-                    //    System.out.println(a.destinationI+ " " +a.destinationJ);
-                    //}
+                    for(AIMove a : allMoves){
+                        System.out.print("Source " + a.sourceI+ "," +a.sourceJ);
+                        System.out.println(" Destination " + a.destinationI+ "," +a.destinationJ);
+                    }
 
                     scan.nextLine();
                     //PERFORM AI MOVE HERE

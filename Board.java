@@ -31,29 +31,22 @@ public class Board {
     int directionJ[] = {0, 1, 0, -1};
 
     public ArrayList<AIMove> GenerateMoves(char player){
-        ArrayList<AIMove> allPossibleMoves = null;
-
-        boolean canSwapOrPass = TestCaseThree(player);
+        ArrayList<AIMove> allPossibleMoves = new ArrayList<AIMove>();
 
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
                 if(board[i][j] == player){
-                    for (int radius = 1, loop = 0; loop < 4; radius++,loop++) {
-                        try{
+                    for(int radius = 1; radius < 4; radius++){
+                        for (int loop = 0; loop < 4; loop++) {
                             //Test Destination Coordinates (k,l)
-                            int k = i+radius*directionI[loop];
-                            int l = j+radius*directionJ[loop];
-                            if((k>=0 && k<=3 ) && (l>=0 && l<=3 )){
-
-                                if(MovePieceSpecific(player, i,j,k,l)){
-                                allPossibleMoves.add(new AIMove(i,j,k,l));
+                            int k = i + radius * directionI[loop];
+                            int l = j + radius * directionJ[loop];
+                            if ((k >= 0 && k < 4) && (l >= 0 && l < 4)) {
+                                if (MovePieceSpecific(player, i, j, k, l)) {
+                                    allPossibleMoves.add(new AIMove(i, j, k, l));
                                 }
                             }
                         }
-                        catch (Exception e){
-                            out.println(e);
-                        }
-
                     }
                 }
             }
@@ -85,16 +78,7 @@ public class Board {
     public boolean MovePieceSpecific(char player, int srcI, int srcJ, int dstI, int dstJ) {
         boolean validMove = true;
 
-        out.println("SPECIFIC MOVE PIECE REACHED");
-
-        validMove = ValidMoveCheckSpecific(player, srcI, srcJ, dstI, dstJ);
-
-        if (validMove) {
-            SwapPieces(srcI, srcJ, dstI, dstJ);
-            return true;
-        } else {
-            return false;
-        }
+        return validMove = ValidMoveCheckSpecific(player, srcI, srcJ, dstI, dstJ);
     }
 
     private void SwapPieces(int srcI, int srcJ, int dstI, int dstJ) {
@@ -118,14 +102,11 @@ public class Board {
     //For tree generation of specific player
     public boolean ValidMoveCheckSpecific(char player, int srcI, int srcJ, int dstI, int dstJ) {
 
-        out.println("VALID MOVE CHECK REACHED");
         try {
             TestCaseTwo(player, srcI, srcJ);
             TestCaseFour(TestCaseThree(player), srcI, srcJ, dstI, dstJ);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-
-            out.println("THROWING EXCEPTION HERE");
             return false;
         }
         return true;
@@ -144,7 +125,7 @@ public class Board {
 
     public void TestCaseTwo(char player, int i, int j) {
         if (board[i][j] != player) {
-            throw new SyntaxException("Cannot move that piece (It is a non player piece or an empty space");
+            throw new SyntaxException("");
         }
     }
 
