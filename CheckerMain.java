@@ -27,7 +27,7 @@ public class CheckerMain {
                         validInput = true;
                         break;
                     case '2':
-                        System.out.println("Please pick a human side? W or B");
+                        System.out.println("Please pick an AI side, W or B");
                         do {
                             input = scan.nextLine().charAt(0);
                             switch (input) {
@@ -36,9 +36,11 @@ public class CheckerMain {
                                 case 'B':
                                 case 'b':
                                     b.StartAIMatch(input);
+                                    validTeam = true;
                                     validInput = true;
                                     break;
                                 default:
+                                    validTeam = false;
                                     validInput = false;
                                     System.out.println("Invalid input, try again");
                             }
@@ -48,8 +50,6 @@ public class CheckerMain {
                     default:
                         validInput = false;
                 }
-
-
             } while (!validInput);
 
 
