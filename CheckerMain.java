@@ -74,7 +74,7 @@ public class CheckerMain {
                 boolean validMove = b.MovePiece(src.getI(),src.getJ(),dst.getI(),dst.getJ());
                 if (validMove) {
                     b.DrawBoard();
-
+                    b.SwapPlayer();
                     if(b.CheckVictory())break;
                 } else {
                     System.out.println("Invalid Input");
