@@ -56,7 +56,6 @@ public class CheckerMain {
                 }
             } while (!validInput);
 
-
             b.DrawBoard();
             //Game Loop
             do {
@@ -74,12 +73,9 @@ public class CheckerMain {
                     } while (!syntaxValid);
                 } else if (b.ai_player == b.player) {
                     //PERFORM AI MOVE HERE
-                    char[][] placeHolderOriginal;
-                    placeHolderOriginal = Arrays.copyOf(b.board, b.board.length);
 
-                    ArrayList<AIMove> moves = b.GenerateMoves(b.ai_player, placeHolderOriginal);
-                    ArrayList<Child> children = new ArrayList<Child>(moves.size());
-
+                    out.println("Max val " + b.MiniMax(b.board, 1, true, b.ai_player));
+                    /*
                     out.println("weary");
                     for(AIMove ai : moves){
                         children.add(new Child(b.board));
@@ -90,7 +86,7 @@ public class CheckerMain {
 
                         children.get(i).DrawBoardState();
                     }
-
+                    */
 
 
                     scan.nextLine();

@@ -4,14 +4,7 @@ import java.util.ArrayList;
 
 import static java.lang.System.out;
 
-public class Board{
-
-    boolean aiMatch = false;
-
-    char player;
-    char ai_player;
-
-    int totalMoves;
+public class Board {
 
     public char board[][] =
             {
@@ -20,8 +13,10 @@ public class Board{
                     {'o', 'o', 'o', 'o'},
                     {'o', 'o', 'o', 'o'},
             };
-
-
+    boolean aiMatch = false;
+    char player;
+    char ai_player;
+    int totalMoves;
     int boardWPoint[][] =
             {
                     {-3, -2, -1, 2},
@@ -78,75 +73,73 @@ public class Board{
         return allPossibleMoves;
     }
 
-    public int MiniMax(char[][] currState, int depth, boolean maximizing){
-        if(depth==0 || CheckVictoryAI(currState)){
+    public int MiniMax(char[][] currState, int depth, boolean maximizing, char currPlayerPiece) {
+        if (depth == 0 || CheckVictoryAI(currState)) {
+
             return ScoreEvaluation(ai_player, currState);
         }
+
+        ArrayList<AIMove> aiMoves = GenerateMoves(currPlayerPiece, currState);
+        ArrayList<Child> children = new ArrayList<Child>(aiMoves.size());
+
+        for(AIMove ai : aiMoves){
+            children.add(new Child(currState, ai));
+        }
+
+        //for(Child c : children){
+        //    out.println(c.currentMove.sourceI + "," + c.currentMove.sourceJ + "  " + c.currentMove.destinationI + "," + c.currentMove.destinationJ);
+        //    c.DrawBoardState();
+        //}
+
+        if (maximizing) {
+            int maxEval = -999999999;
+            AIMove bestMove = null;
+            char piece = ai_player;
+            switch (ai_player) {
+                case 'w':
+                    piece = 'b';
+                    break;
+                case 'b':
+                    piece = 'w';
+                    break;
+            }
+            for(Child c : children){
+               //out.println(c.currentMove.sourceI + "," + c.currentMove.sourceJ + "  " + c.currentMove.destinationI + "," + c.currentMove.destinationJ);
+               //c.DrawBoardState();
+                int eval = MiniMax(c.childState, depth-1, !maximizing, piece);
+                if(eval>maxEval){
+                    bestMove = c.currentMove;
+                }
+
+                maxEval = Math.max(maxEval, eval);
+            }
+            return maxEval;
+        }
+        else if(!maximizing){
+            int minEval = 99999999;
+            for(Child c : children){
+                //out.println(c.currentMove.sourceI + "," + c.currentMove.sourceJ + "  " + c.currentMove.destinationI + "," + c.currentMove.destinationJ);
+                //c.DrawBoardState();
+                int eval = MiniMax(c.childState, depth-1, !maximizing, ai_player);
+                minEval = Math.max(minEval, eval);
+            }
+            return minEval;
+        }
+
 
         return 1;
     }
 
-
-        /*
-    public int MiniMax( minmaxboard, int depth, boolean maximizing, ArrayList<Node> children, char pie) {
-
-        if (depth == 0 || minmaxboard.CheckVictory()) {
-            //return evaluation
-            return ScoreEvaluation(pie, minmaxboard.board);
-        }
-
-        if (maximizing) {
-            int maxVal = -99999999;
-
-            char piece;
-            if (ai_player == 'w') {
-                piece = 'b';
-            } else {
-                piece = 'w';
-            }
-
-            for (AIMove ai : moves) {
-                ;
-
-                int evaluation = b1.MiniMax(b1, depth - 1, !maximizing, b1.GenerateMoves(piece, b1.board), piece);
-
-                maxVal = Math.max(evaluation, maxVal);
-            }
-            return maxVal;
-        } else {
-            int minVal = 99999999;
-            char piece;
-            if (ai_player == 'w') {
-                piece = 'b';
-            } else {
-                piece = 'w';
-            }
-
-            for (AIMove ai : moves) {
-                Board b1 = new Board();
-                b1.board = minmaxboard.board;
-                b1.SwapPieces(ai.getSourceI(), ai.getSourceJ(), ai.getDestinationI(), ai.getDestinationJ());
-
-                int evaluation = b1.MiniMax(b1, depth - 1, !maximizing, , piece);
-
-                minVal = Math.max(evaluation, minVal);
-            }
-            return minVal;
-
-        }
-    }
-    */
-
+    //Heuristic Scoring
     public int ScoreEvaluation(char piece, char[][] board) {
         int evalScore = 0;
 
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                if(board[i][j] == piece){
-                    if(piece == 'w'){
+                if (board[i][j] == piece) {
+                    if (piece == 'w') {
                         evalScore += boardWPoint[i][j];
-                    }
-                    else if(piece == 'b'){
+                    } else if (piece == 'b') {
                         evalScore += boardBPoint[i][j];
                     }
                 }
@@ -513,7 +506,7 @@ public class Board{
 
     public void StartAIMatch(char team) {
         aiMatch = true;
-        ai_player = team;
+        ai_player = Character.toLowerCase(team);
     }
 
 
