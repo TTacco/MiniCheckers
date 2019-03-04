@@ -20,10 +20,10 @@ public class Board {
     int totalMoves;
     int boardWPoint[][] =
             {
-                    {-12, -6, 1, -4},
+                    {-12, -6, 1, 4},
                     {-6, 1, 5, 12},
                     {1, 5, 8, 16},
-                    {-4, 12, 16, 32},
+                    {4, 12, 16, 32},
             };
 
     int boardBPoint[][] =
@@ -180,7 +180,7 @@ public class Board {
                 }
             }
             if(depth==7){
-                out.println("AI has moved: (" + bestMove.sourceI + "," + bestMove.sourceJ + ") to (" + bestMove.destinationI + "," + bestMove.destinationJ+")");
+                DisplayAlphaNumericCoordinates(bestMove.sourceJ, bestMove.sourceI, bestMove.destinationJ, bestMove.destinationI);
                 SwapPiecesAI(bestMove);
 
             }
@@ -205,6 +205,43 @@ public class Board {
 
 
         return 1;
+    }
+
+    private void DisplayAlphaNumericCoordinates(int AlphaSource, int NumSource, int AlphaDestination, int NumDestination) {
+        char aSource = 'a';
+        char aDestination = 'a';
+
+        switch(AlphaSource){
+            case 0:
+                aSource = 'A';
+                break;
+            case 1:
+                aSource = 'B';
+                break;
+            case 2:
+                aSource = 'C';
+                break;
+            case 3:
+                aSource = 'D';
+                break;
+        }
+
+        switch(AlphaDestination){
+            case 0:
+                aDestination = 'A';
+                break;
+            case 1:
+                aDestination = 'B';
+                break;
+            case 2:
+                aDestination = 'C';
+                break;
+            case 3:
+                aDestination = 'D';
+                break;
+        }
+        //I mean i could use string sort
+        out.println("The AI has moved " + "(" + aSource + "" + (NumSource+1) + ") to (" + aDestination + "" + (NumDestination+1) +")" );
     }
 
     //Heuristic Scoring

@@ -64,6 +64,7 @@ public class CheckerMain {
             turnsWhite = 0;
             turnsBlack = 0;
             do {
+                out.println();
                 out.println("It is " + (b.player == 'w' ? "White's " : "Black's ") + "turn");
 
                 //If the input coordinates are part of the syntax or not
@@ -96,8 +97,8 @@ public class CheckerMain {
                         turnsBlack++;
                     }
 
-                    out.println("TURNS PASSED FOR WHITE " + turnsWhite);
-                    out.println("TURNS PASSED FOR BLACK " + turnsBlack);
+                    out.println("Turns passed for WHITE " + turnsWhite);
+                    out.println("Turns passed for BLACK " + turnsBlack);
                     if (b.CheckVictory()) {
                         out.println((b.player == 'w' ? "White " : "Black ") + " side has won the game!");
 
