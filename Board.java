@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import static java.lang.System.out;
 
-public class Board {
+public class Board{
 
     boolean aiMatch = false;
 
@@ -13,12 +13,29 @@ public class Board {
 
     int totalMoves;
 
-    char board[][] =
+    public char board[][] =
             {
                     {'o', 'o', 'o', 'o'},
                     {'o', 'o', 'o', 'o'},
                     {'o', 'o', 'o', 'o'},
                     {'o', 'o', 'o', 'o'},
+            };
+
+
+    int boardWPoint[][] =
+            {
+                    {-3, -2, -1, 2},
+                    {-2, -1, 2, 4},
+                    {-1, 2, 4, 7},
+                    {2, 4, 7, 10},
+            };
+
+    int boardBPoint[][] =
+            {
+                    {10, 7, 4, 2},
+                    {7, 4, 2, -1},
+                    {4, 2, -1, -2},
+                    {2, -1, -2, -3},
             };
 
 
@@ -30,13 +47,13 @@ public class Board {
     int directionI[] = {-1, 0, 1, 0};
     int directionJ[] = {0, 1, 0, -1};
 
-    public ArrayList<AIMove> GenerateMoves(char player){
+    public ArrayList<AIMove> GenerateMoves(char player, char[][] board) {
         ArrayList<AIMove> allPossibleMoves = new ArrayList<AIMove>();
 
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                if(board[i][j] == player){
-                    for(int radius = 1; radius < 4; radius++){
+                if (board[i][j] == player) {
+                    for (int radius = 1; radius < 4; radius++) {
                         for (int loop = 0; loop < 4; loop++) {
                             //Test Destination Coordinates (k,l)
                             int k = 0;
@@ -61,6 +78,83 @@ public class Board {
         return allPossibleMoves;
     }
 
+    public int MiniMax(char[][] currState, int depth, boolean maximizing){
+        if(depth==0 || CheckVictoryAI(currState)){
+            return ScoreEvaluation(ai_player, currState);
+        }
+
+        return 1;
+    }
+
+
+        /*
+    public int MiniMax( minmaxboard, int depth, boolean maximizing, ArrayList<Node> children, char pie) {
+
+        if (depth == 0 || minmaxboard.CheckVictory()) {
+            //return evaluation
+            return ScoreEvaluation(pie, minmaxboard.board);
+        }
+
+        if (maximizing) {
+            int maxVal = -99999999;
+
+            char piece;
+            if (ai_player == 'w') {
+                piece = 'b';
+            } else {
+                piece = 'w';
+            }
+
+            for (AIMove ai : moves) {
+                ;
+
+                int evaluation = b1.MiniMax(b1, depth - 1, !maximizing, b1.GenerateMoves(piece, b1.board), piece);
+
+                maxVal = Math.max(evaluation, maxVal);
+            }
+            return maxVal;
+        } else {
+            int minVal = 99999999;
+            char piece;
+            if (ai_player == 'w') {
+                piece = 'b';
+            } else {
+                piece = 'w';
+            }
+
+            for (AIMove ai : moves) {
+                Board b1 = new Board();
+                b1.board = minmaxboard.board;
+                b1.SwapPieces(ai.getSourceI(), ai.getSourceJ(), ai.getDestinationI(), ai.getDestinationJ());
+
+                int evaluation = b1.MiniMax(b1, depth - 1, !maximizing, , piece);
+
+                minVal = Math.max(evaluation, minVal);
+            }
+            return minVal;
+
+        }
+    }
+    */
+
+    public int ScoreEvaluation(char piece, char[][] board) {
+        int evalScore = 0;
+
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                if(board[i][j] == piece){
+                    if(piece == 'w'){
+                        evalScore += boardWPoint[i][j];
+                    }
+                    else if(piece == 'b'){
+                        evalScore += boardBPoint[i][j];
+                    }
+                }
+            }
+        }
+
+        return evalScore;
+    }
 
 
     //==================================================================================
@@ -85,7 +179,15 @@ public class Board {
         return ValidMoveCheckSpecific(player, srcI, srcJ, dstI, dstJ);
     }
 
-    private void SwapPieces(int srcI, int srcJ, int dstI, int dstJ) {
+    public void SwapPieces(int srcI, int srcJ, int dstI, int dstJ) {
+        char bufferChar = board[srcI][srcJ];
+        board[srcI][srcJ] = board[dstI][dstJ];
+        board[dstI][dstJ] = bufferChar;
+    }
+
+
+    //AI function
+    public void SwapPiecesSpecific(char[][] board, int srcI, int srcJ, int dstI, int dstJ) {
         char bufferChar = board[srcI][srcJ];
         board[srcI][srcJ] = board[dstI][dstJ];
         board[dstI][dstJ] = bufferChar;
@@ -152,6 +254,7 @@ public class Board {
         }
         return true;
     }
+
     //3b. Overload where the current passed character is instead checked
     public boolean TestCaseThree(char piece) {
         for (int x = 0; x < 4; x++) {
@@ -342,6 +445,7 @@ public class Board {
             }
             out.println();
         }
+        out.println();
     }
 
     public void SwapPlayer() {
@@ -354,6 +458,33 @@ public class Board {
     }
 
     public boolean CheckVictory() {
+        int limit = 3;
+        int whiteScore = 0;
+        int blackScore = 0;
+
+        for (int x = 0; x < 4; x++) {
+            for (int y = 0; y < 4; y++) {
+                if (y < limit) {
+                    if (board[x][y] == 'b') blackScore++;
+                } else if (y > limit) {
+                    if (board[x][y] == 'w') whiteScore++;
+                }
+            }
+            limit--;
+        }
+
+        if (whiteScore >= 6) {
+            out.println("White side has won!");
+            return true;
+        } else if (blackScore >= 6) {
+            out.println("Black side has won!");
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean CheckVictoryAI(char board[][]) {
         int limit = 3;
         int whiteScore = 0;
         int blackScore = 0;

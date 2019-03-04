@@ -1,5 +1,8 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
+
+import static java.lang.System.out;
 
 public class CheckerMain {
     static Coordinate src;
@@ -19,7 +22,7 @@ public class CheckerMain {
             validInput = false;
             validTeam = false;
 
-            System.out.println("Please input your game mode, 1 for Player Versus Player and 2 for Player Versus AI");
+            out.println("Please input your game mode, 1 for Player Versus Player and 2 for Player Versus AI");
             do {
                 input = scan.nextLine().charAt(0);
 
@@ -28,7 +31,7 @@ public class CheckerMain {
                         validInput = true;
                         break;
                     case '2':
-                        System.out.println("Please pick an AI side, W or B");
+                        out.println("Please pick an AI side, W or B");
                         do {
                             input = scan.nextLine().charAt(0);
                             switch (input) {
@@ -43,7 +46,7 @@ public class CheckerMain {
                                 default:
                                     validTeam = false;
                                     validInput = false;
-                                    System.out.println("Invalid input, try again");
+                                    out.println("Invalid input, try again");
                             }
                         }
                         while (!validTeam);
@@ -57,10 +60,10 @@ public class CheckerMain {
             b.DrawBoard();
             //Game Loop
             do {
-                System.out.println("It is " + (b.player == 'w' ? "White's " : "Black's ") + "turn");
+                out.println("It is " + (b.player == 'w' ? "White's " : "Black's ") + "turn");
 
                 //If the input coordinates are part of the syntax or not
-                if(b.ai_player != b.player) {
+                if (b.ai_player != b.player) {
                     do {
                         try {
                             syntaxValid = true;
@@ -69,29 +72,38 @@ public class CheckerMain {
                             syntaxValid = false;
                         }
                     } while (!syntaxValid);
-                }
-                else if(b.ai_player == b.player){
-                    ArrayList<AIMove> allMoves = b.GenerateMoves(b.ai_player);
+                } else if (b.ai_player == b.player) {
+                    //PERFORM AI MOVE HERE
+                    char[][] placeHolderOriginal;
+                    placeHolderOriginal = Arrays.copyOf(b.board, b.board.length);
 
-                    //System.out.println("IS EMPTY? " + allMoves.isEmpty());
+                    ArrayList<AIMove> moves = b.GenerateMoves(b.ai_player, placeHolderOriginal);
+                    ArrayList<Child> children = new ArrayList<Child>(moves.size());
 
-                    for(AIMove a : allMoves){
-                        System.out.print("Source " + a.sourceI+ "," +a.sourceJ);
-                        System.out.println(" Destination " + a.destinationI+ "," +a.destinationJ);
+                    out.println("weary");
+                    for(AIMove ai : moves){
+                        children.add(new Child(b.board));
                     }
 
+                    for(int i = 0; i<moves.size(); i++){
+                        children.get(i).SwapStatePieces(moves.get(i).sourceI,moves.get(i).sourceJ, moves.get(i).destinationI, moves.get(i).destinationJ);
+
+                        children.get(i).DrawBoardState();
+                    }
+
+
+
                     scan.nextLine();
-                    //PERFORM AI MOVE HERE
                 }
 
                 //Checks if the move is valid, returns a bool for now
-                boolean validMove = b.MovePiece(src.getI(),src.getJ(),dst.getI(),dst.getJ());
+                boolean validMove = b.MovePiece(src.getI(), src.getJ(), dst.getI(), dst.getJ());
                 if (validMove) {
                     b.DrawBoard();
                     b.SwapPlayer();
-                    if(b.CheckVictory())break;
+                    if (b.CheckVictory()) break;
                 } else {
-                    System.out.println("Invalid Input");
+                    out.println("Invalid Input");
                 }
 
             } while (true);
