@@ -77,7 +77,7 @@ public class CheckerMain {
                 } else if (b.ai_player == b.player) {
                     //PERFORM AI MOVE HERE
                     //b.MiniMax(b.board, 6, true, b.ai_player);
-                    b.MiniMaxAlphaBeta(b.board, 9, -999999999, 999999999,true, b.ai_player);
+                    b.MiniMaxAlphaBeta(b.board, 7, -999999999, 999999999,true, b.ai_player);
                 }
 
                 //Checks if the move is valid, returns a bool for now

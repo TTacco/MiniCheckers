@@ -3,6 +3,7 @@ import jdk.nashorn.internal.runtime.regexp.joni.exception.SyntaxException;
 import java.util.ArrayList;
 
 import static java.lang.System.out;
+import static java.lang.System.setOut;
 
 public class Board {
 
@@ -19,18 +20,18 @@ public class Board {
     int totalMoves;
     int boardWPoint[][] =
             {
-                    {-4, -2, -2, 0},
-                    {-2, -2, 3, 7},
-                    {-2, 3, 5, 9},
-                    {0, 7, 9, 12},
+                    {-12, -6, 1, -4},
+                    {-6, 1, 5, 8},
+                    {1, 5, 8, 16},
+                    {-4, 8, 16, 32},
             };
 
     int boardBPoint[][] =
             {
-                    {12, 9, 7, 0},
-                    {9, 5, 3, -2},
-                    {7, 3, -2, -2},
-                    {0, -2, -2, -4},
+                    {32, 16, 7, 4},
+                    {16, 8, 5, 1},
+                    {8, 5, 1, -6},
+                    {4, 1, -6, -12},
             };
 
 
@@ -64,6 +65,8 @@ public class Board {
                                     allPossibleMoves.add(new AIMove(i, j, k, l));
                                 }
                             }
+
+
                         }
                     }
                 }
@@ -163,18 +166,22 @@ public class Board {
                 //out.println(c.currentMove.sourceI + "," + c.currentMove.sourceJ + "  " + c.currentMove.destinationI + "," + c.currentMove.destinationJ);
                 //c.DrawBoardState();
                 int eval = MiniMaxAlphaBeta(c.childState, depth-1, alpha, beta, !maximizing, piece);
+
+                if(depth == 7 && (eval > maxEval)){
+                    //out.println("Best Move determined: (" + bestMove.sourceI + "," + bestMove.sourceJ + ") (" + bestMove.destinationI + "," + bestMove.destinationJ+")");
+                    //out.println("BEST VALUE FOR IT IS " + eval);
+                    bestMove = c.currentMove;
+                }
+
                 maxEval = Math.max(maxEval, eval);
                 alpha = Math.max(alpha, eval);
 
-                if(depth == 9 && (eval >= maxEval)){
-                    bestMove = c.currentMove;
-                }
 
                 if(beta<= alpha){
                     break;
                 }
             }
-            if(depth==9){
+            if(depth==7){
                 //out.println(bestMove.sourceI + "," + bestMove.sourceJ + "  " + bestMove.destinationI + "," + bestMove.destinationJ);
                 SwapPiecesAI(bestMove);
             }
@@ -574,10 +581,8 @@ public class Board {
         }
 
         if (whiteScore >= 6) {
-            out.println("White side has won!");
             return true;
         } else if (blackScore >= 6) {
-            out.println("Black side has won!");
             return true;
         }
 
