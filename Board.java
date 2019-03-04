@@ -19,18 +19,18 @@ public class Board {
     int totalMoves;
     int boardWPoint[][] =
             {
-                    {-4, -3, -2, 1},
-                    {-3, -2, 5, 7},
-                    {-2, 5, 7, 9},
-                    {1, 7, 9, 14},
+                    {-4, -2, -2, 0},
+                    {-2, -2, 3, 7},
+                    {-2, 3, 5, 9},
+                    {0, 7, 9, 12},
             };
 
     int boardBPoint[][] =
             {
-                    {14, 9, 7, 1},
-                    {9, 7, 5, -2},
-                    {7, 5, -2, -3},
-                    {1, -2, -3, -4},
+                    {12, 9, 7, 0},
+                    {9, 5, 3, -2},
+                    {7, 3, -2, -2},
+                    {0, -2, -2, -4},
             };
 
 
@@ -104,17 +104,14 @@ public class Board {
                     break;
             }
             for(Child c : children){
-               //out.println(c.currentMove.sourceI + "," + c.currentMove.sourceJ + "  " + c.currentMove.destinationI + "," + c.currentMove.destinationJ);
-               //c.DrawBoardState();
                 int eval = MiniMax(c.childState, depth-1, !maximizing, piece);
                 maxEval = Math.max(maxEval, eval);
 
-                if(depth == 6 && (eval >= maxEval)){
+                if(depth == 8 && (eval >= maxEval)){
                      bestMove = c.currentMove;
                 }
             }
-            if(depth==6){
-                //out.println(bestMove.sourceI + "," + bestMove.sourceJ + "  " + bestMove.destinationI + "," + bestMove.destinationJ);
+            if(depth==8){
                 SwapPiecesAI(bestMove);
             }
 
@@ -123,10 +120,79 @@ public class Board {
         else if(!maximizing){
             int minEval = 99999999;
             for(Child c : children){
-                //out.println(c.currentMove.sourceI + "," + c.currentMove.sourceJ + "  " + c.currentMove.destinationI + "," + c.currentMove.destinationJ);
-                //c.DrawBoardState();
                 int eval = MiniMax(c.childState, depth-1, !maximizing, ai_player);
                 minEval = Math.min(minEval, eval);
+            }
+            return minEval;
+        }
+
+
+        return 1;
+    }
+
+    //===========================================================================================================
+    //ALPHA BETA MIN MAX
+    //===========================================================================================================
+
+    public int MiniMaxAlphaBeta(char[][] currState, int depth, int alpha, int beta, boolean maximizing, char currPlayerPiece) {
+        if (depth == 0 || CheckVictoryAI(currState)) {
+
+            return ScoreEvaluation(ai_player, currState);
+        }
+
+        ArrayList<AIMove> aiMoves = GenerateMoves(currPlayerPiece, currState);
+        ArrayList<Child> children = new ArrayList<Child>(aiMoves.size());
+
+        for(AIMove ai : aiMoves){
+            children.add(new Child(currState, ai));
+        }
+
+        if (maximizing) {
+            int maxEval = -999999999;
+            AIMove bestMove = new AIMove(-1,-1,-1,-1);
+            char piece = ai_player;
+            switch (ai_player) {
+                case 'w':
+                    piece = 'b';
+                    break;
+                case 'b':
+                    piece = 'w';
+                    break;
+            }
+            for(Child c : children){
+                //out.println(c.currentMove.sourceI + "," + c.currentMove.sourceJ + "  " + c.currentMove.destinationI + "," + c.currentMove.destinationJ);
+                //c.DrawBoardState();
+                int eval = MiniMaxAlphaBeta(c.childState, depth-1, alpha, beta, !maximizing, piece);
+                maxEval = Math.max(maxEval, eval);
+                alpha = Math.max(alpha, eval);
+
+                if(depth == 9 && (eval >= maxEval)){
+                    bestMove = c.currentMove;
+                }
+
+                if(beta<= alpha){
+                    break;
+                }
+            }
+            if(depth==9){
+                //out.println(bestMove.sourceI + "," + bestMove.sourceJ + "  " + bestMove.destinationI + "," + bestMove.destinationJ);
+                SwapPiecesAI(bestMove);
+            }
+
+            return maxEval;
+        }
+        else if(!maximizing){
+            int minEval = 999999999;
+            for(Child c : children){
+                //out.println(c.currentMove.sourceI + "," + c.currentMove.sourceJ + "  " + c.currentMove.destinationI + "," + c.currentMove.destinationJ);
+                //c.DrawBoardState();
+                int eval = MiniMaxAlphaBeta(c.childState, depth-1, alpha, beta, !maximizing, ai_player);
+                minEval = Math.min(minEval, eval);
+                beta = Math.min(beta, eval);
+
+                if(beta<=alpha){
+                    break;
+                }
             }
             return minEval;
         }
@@ -446,6 +512,8 @@ public class Board {
     }
 
     public void DrawBoard() {
+        out.println();
+        out.println("=================================================");
         out.println("  A  B  C  D");
         for (int i = 0; i < 4; i++) {
             out.print(i + 1);
@@ -454,7 +522,6 @@ public class Board {
             }
             out.println();
         }
-        out.println();
     }
 
     public void SwapPlayer() {
@@ -481,12 +548,9 @@ public class Board {
             }
             limit--;
         }
-
         if (whiteScore >= 6) {
-            out.println("White side has won!");
             return true;
         } else if (blackScore >= 6) {
-            out.println("Black side has won!");
             return true;
         }
 

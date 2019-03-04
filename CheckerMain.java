@@ -16,6 +16,8 @@ public class CheckerMain {
         boolean syntaxValid = false;
         char input;
 
+        int turns;
+
         while (true) {
             Board b = new Board();
             b.InitalizeBoard();
@@ -58,6 +60,7 @@ public class CheckerMain {
 
             b.DrawBoard();
             //Game Loop
+            turns = 0;
             do {
                 out.println("It is " + (b.player == 'w' ? "White's " : "Black's ") + "turn");
 
@@ -73,8 +76,8 @@ public class CheckerMain {
                     } while (!syntaxValid);
                 } else if (b.ai_player == b.player) {
                     //PERFORM AI MOVE HERE
-
-                    b.MiniMax(b.board, 6, true, b.ai_player);
+                    //b.MiniMax(b.board, 6, true, b.ai_player);
+                    b.MiniMaxAlphaBeta(b.board, 9, -999999999, 999999999,true, b.ai_player);
                 }
 
                 //Checks if the move is valid, returns a bool for now
@@ -84,8 +87,15 @@ public class CheckerMain {
                 }
                 if (validMove) {
                     b.DrawBoard();
+                    turns++;
+
+                    out.println("TURNS PASSED " + turns);
+                    if (b.CheckVictory()) {
+                        out.println((b.player == 'w' ? "White " : "Black ") + " side has won the game!");
+
+                        break;
+                    }
                     b.SwapPlayer();
-                    if (b.CheckVictory()) break;
                 } else {
                     out.println("Invalid Input");
                 }
