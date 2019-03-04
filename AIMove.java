@@ -1,6 +1,8 @@
 public class AIMove {
     int sourceI, sourceJ, destinationI, destinationJ = -1;
 
+    int minmaxEval;
+
     public AIMove(int sourceI, int sourceJ, int destinationI, int destinationJ) {
         this.sourceI = sourceI;
         this.sourceJ = sourceJ;

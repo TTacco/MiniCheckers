@@ -74,26 +74,14 @@ public class CheckerMain {
                 } else if (b.ai_player == b.player) {
                     //PERFORM AI MOVE HERE
 
-                    out.println("Max val " + b.MiniMax(b.board, 1, true, b.ai_player));
-                    /*
-                    out.println("weary");
-                    for(AIMove ai : moves){
-                        children.add(new Child(b.board));
-                    }
-
-                    for(int i = 0; i<moves.size(); i++){
-                        children.get(i).SwapStatePieces(moves.get(i).sourceI,moves.get(i).sourceJ, moves.get(i).destinationI, moves.get(i).destinationJ);
-
-                        children.get(i).DrawBoardState();
-                    }
-                    */
-
-
-                    scan.nextLine();
+                    b.MiniMax(b.board, 6, true, b.ai_player);
                 }
 
                 //Checks if the move is valid, returns a bool for now
-                boolean validMove = b.MovePiece(src.getI(), src.getJ(), dst.getI(), dst.getJ());
+                boolean validMove = true;
+                if(b.player != b.ai_player) {
+                    validMove = b.MovePiece(src.getI(), src.getJ(), dst.getI(), dst.getJ());
+                }
                 if (validMove) {
                     b.DrawBoard();
                     b.SwapPlayer();

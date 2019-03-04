@@ -19,18 +19,18 @@ public class Board {
     int totalMoves;
     int boardWPoint[][] =
             {
-                    {-3, -2, -1, 2},
-                    {-2, -1, 2, 4},
-                    {-1, 2, 4, 7},
-                    {2, 4, 7, 10},
+                    {-4, -3, -2, 1},
+                    {-3, -2, 5, 7},
+                    {-2, 5, 7, 9},
+                    {1, 7, 9, 14},
             };
 
     int boardBPoint[][] =
             {
-                    {10, 7, 4, 2},
-                    {7, 4, 2, -1},
-                    {4, 2, -1, -2},
-                    {2, -1, -2, -3},
+                    {14, 9, 7, 1},
+                    {9, 7, 5, -2},
+                    {7, 5, -2, -3},
+                    {1, -2, -3, -4},
             };
 
 
@@ -93,7 +93,7 @@ public class Board {
 
         if (maximizing) {
             int maxEval = -999999999;
-            AIMove bestMove = null;
+            AIMove bestMove = new AIMove(-1,-1,-1,-1);
             char piece = ai_player;
             switch (ai_player) {
                 case 'w':
@@ -107,12 +107,17 @@ public class Board {
                //out.println(c.currentMove.sourceI + "," + c.currentMove.sourceJ + "  " + c.currentMove.destinationI + "," + c.currentMove.destinationJ);
                //c.DrawBoardState();
                 int eval = MiniMax(c.childState, depth-1, !maximizing, piece);
-                if(eval>maxEval){
-                    bestMove = c.currentMove;
-                }
-
                 maxEval = Math.max(maxEval, eval);
+
+                if(depth == 6 && (eval >= maxEval)){
+                     bestMove = c.currentMove;
+                }
             }
+            if(depth==6){
+                //out.println(bestMove.sourceI + "," + bestMove.sourceJ + "  " + bestMove.destinationI + "," + bestMove.destinationJ);
+                SwapPiecesAI(bestMove);
+            }
+
             return maxEval;
         }
         else if(!maximizing){
@@ -121,7 +126,7 @@ public class Board {
                 //out.println(c.currentMove.sourceI + "," + c.currentMove.sourceJ + "  " + c.currentMove.destinationI + "," + c.currentMove.destinationJ);
                 //c.DrawBoardState();
                 int eval = MiniMax(c.childState, depth-1, !maximizing, ai_player);
-                minEval = Math.max(minEval, eval);
+                minEval = Math.min(minEval, eval);
             }
             return minEval;
         }
@@ -173,6 +178,17 @@ public class Board {
     }
 
     public void SwapPieces(int srcI, int srcJ, int dstI, int dstJ) {
+        char bufferChar = board[srcI][srcJ];
+        board[srcI][srcJ] = board[dstI][dstJ];
+        board[dstI][dstJ] = bufferChar;
+    }
+
+    public void SwapPiecesAI(AIMove ai) {
+        int srcI = ai.sourceI;
+        int srcJ = ai.sourceJ;
+        int dstI = ai.destinationI;
+        int dstJ = ai.destinationJ;
+
         char bufferChar = board[srcI][srcJ];
         board[srcI][srcJ] = board[dstI][dstJ];
         board[dstI][dstJ] = bufferChar;
