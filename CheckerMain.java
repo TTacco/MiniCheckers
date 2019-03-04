@@ -16,7 +16,8 @@ public class CheckerMain {
         boolean syntaxValid = false;
         char input;
 
-        int turns;
+        int turnsBlack = 0;
+        int turnsWhite = 0;
 
         while (true) {
             Board b = new Board();
@@ -60,7 +61,8 @@ public class CheckerMain {
 
             b.DrawBoard();
             //Game Loop
-            turns = 0;
+            turnsWhite = 0;
+            turnsBlack = 0;
             do {
                 out.println("It is " + (b.player == 'w' ? "White's " : "Black's ") + "turn");
 
@@ -87,9 +89,15 @@ public class CheckerMain {
                 }
                 if (validMove) {
                     b.DrawBoard();
-                    turns++;
+                    if(b.player == 'w'){
+                        turnsWhite++;
+                    }
+                    else{
+                        turnsBlack++;
+                    }
 
-                    out.println("TURNS PASSED " + turns);
+                    out.println("TURNS PASSED FOR WHITE " + turnsWhite);
+                    out.println("TURNS PASSED FOR BLACK " + turnsBlack);
                     if (b.CheckVictory()) {
                         out.println((b.player == 'w' ? "White " : "Black ") + " side has won the game!");
 

@@ -21,9 +21,9 @@ public class Board {
     int boardWPoint[][] =
             {
                     {-12, -6, 1, -4},
-                    {-6, 1, 5, 8},
+                    {-6, 1, 5, 12},
                     {1, 5, 8, 16},
-                    {-4, 8, 16, 32},
+                    {-4, 12, 16, 32},
             };
 
     int boardBPoint[][] =
@@ -61,11 +61,9 @@ public class Board {
                                 if (MovePieceSpecific(player, i, j, k, l)) {
                                     //System.out.print("Source " + i + "," + j);
                                     //System.out.println(" Destination " + k + "," + l);
-
                                     allPossibleMoves.add(new AIMove(i, j, k, l));
                                 }
                             }
-
 
                         }
                     }
@@ -182,8 +180,9 @@ public class Board {
                 }
             }
             if(depth==7){
-                //out.println(bestMove.sourceI + "," + bestMove.sourceJ + "  " + bestMove.destinationI + "," + bestMove.destinationJ);
+                out.println("AI has moved: (" + bestMove.sourceI + "," + bestMove.sourceJ + ") to (" + bestMove.destinationI + "," + bestMove.destinationJ+")");
                 SwapPiecesAI(bestMove);
+
             }
 
             return maxEval;
@@ -262,9 +261,16 @@ public class Board {
         int dstI = ai.destinationI;
         int dstJ = ai.destinationJ;
 
-        char bufferChar = board[srcI][srcJ];
-        board[srcI][srcJ] = board[dstI][dstJ];
-        board[dstI][dstJ] = bufferChar;
+        try {
+            char bufferChar = board[srcI][srcJ];
+            board[srcI][srcJ] = board[dstI][dstJ];
+            board[dstI][dstJ] = bufferChar;
+        }catch(Exception e){
+            out.println(e);
+            out.print("("+srcI + "," + srcJ +")");
+            out.print("("+dstI + "," + dstJ +")");
+
+        }
     }
 
 
